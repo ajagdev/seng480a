@@ -23,7 +23,7 @@ loop: while (TRUE) {
        
        if ( timer >= 0) {
         timer := timer - 1;
-        };
+        }; 
  
         if ( timer = 1) {
          
@@ -227,10 +227,3 @@ Sensor == /\(NS_sensor = TRUE) ~> ( NS = "green" )
 p2 == INSTANCE project2 WITH EW <- EW, NS <- NS, NS_ped <- NS_ped, EW_ped <- EW_ped,
  EW_ped_button <- EW_ped_button, NS_ped_button <- NS_ped_button
 =============================================================================
-\* Modification History
-\* Last modified Mon Nov 21 15:21:07 PST 2016 by Daniel
-\* Last modified Mon Nov 21 13:08:57 PST 2016 by abhi
-\* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
-\* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi
-\* Last modified Tue Nov 01 15:39:16 PDT 2016 by Daniel
-\* Created Tue Nov 01 15:33:18 PDT 2016 by Daniel
