@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ------------------------------ MODULE project1 ------------------------------
 EXTENDS Integers
 
@@ -104,7 +103,7 @@ Cycle == /\ [][EW = "green" => EW' = "yellow"]_<<EW>>
          /\ [][NS = "red" => NS' = "green"]_<<NS>>
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 21 12:20:27 PST 2016 by Daniel
+\* Last modified Mon Nov 21 12:49:07 PST 2016 by Daniel
 \* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
 \* Last modified Tue Nov 01 16:28:48 PDT 2016 by abhi
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi
@@ -211,4 +210,3 @@ Spec == /\ Init /\ [][Next]_vars
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi
 \* Last modified Tue Nov 01 15:39:16 PDT 2016 by Daniel
 \* Created Tue Nov 01 15:33:18 PDT 2016 by Daniel
->>>>>>> 47e4295ee8afc58977d5a5fae128a585e148ebcf

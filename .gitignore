@@ -2,3 +2,6 @@
 !project1.tla
 !project2.tla
 !project1.toolbox/project1__Model_1.launch
+TLA/p1/project1.cfg
+TLA/p1/project1.old
+TLA/p1/project1.toolbox/
