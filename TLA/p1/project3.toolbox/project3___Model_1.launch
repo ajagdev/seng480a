@@ -18,19 +18,12 @@
 <stringAttribute key="modelBehaviorNext" value=""/>
 <stringAttribute key="modelBehaviorSpec" value="Spec"/>
 <intAttribute key="modelBehaviorSpecType" value="1"/>
-<stringAttribute key="modelBehaviorVars" value="NS_ped_button, NS, NS_ped, EW_ped, timer, EW, pc, EW_ped_button"/>
+<stringAttribute key="modelBehaviorVars" value="EW_ped_button, NS_ped, pc, NS, EW_ped, EW, timer, NS_ped_button"/>
 <stringAttribute key="modelComments" value=""/>
 <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
 <listAttribute key="modelCorrectnessInvariants"/>
 <listAttribute key="modelCorrectnessProperties">
-<listEntry value="1p1!Cycle"/>
-<listEntry value="1p1!NoCollisions"/>
-<listEntry value="0NoPedCollisions"/>
-<listEntry value="0PedCycle"/>
-<listEntry value="0PedOnRed"/>
-<listEntry value="0Press"/>
-<listEntry value="0LongerYellow"/>
-<listEntry value="1Properties"/>
+<listEntry value="1p2!Properties"/>
 </listAttribute>
 <stringAttribute key="modelExpressionEval" value=""/>
 <stringAttribute key="modelParameterActionConstraint" value=""/>
@@ -45,6 +38,6 @@
 <intAttribute key="simuAril" value="-1"/>
 <intAttribute key="simuDepth" value="100"/>
 <intAttribute key="simuSeed" value="-1"/>
-<stringAttribute key="specName" value="project2"/>
+<stringAttribute key="specName" value="project3"/>
 <stringAttribute key="view" value=""/>
 </launchConfiguration>

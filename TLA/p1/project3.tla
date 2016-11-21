@@ -1,4 +1,4 @@
------------------------------- MODULE project2 ------------------------------
+------------------------------ MODULE project3 ------------------------------
 EXTENDS Integers
 
 (*
@@ -202,12 +202,12 @@ PedCycle == /\ [][EW_ped = "green" => EW_ped' = "yellow"]_<<EW_ped>>
 PedOnRed == /\([][(EW_ped = "red" /\ EW_ped' = "green") => (EW = "red" /\ NS = "red")]_<<EW_ped, EW, NS>>)
             /\([][(NS_ped = "red" /\ NS_ped' = "green") => (EW = "red" /\ NS = "red")]_<<NS_ped, EW, NS>>)
 
-Properties == Press /\ LongerYellow /\ NoPedCollisions /\ PedCycle /\ PedOnRed
          
-p1 == INSTANCE project1 WITH EW <- EW, NS <- NS
+p2 == INSTANCE project2 WITH EW <- EW, NS <- NS, NS_ped <- NS_ped, EW_ped <- EW_ped,
+ EW_ped_button <- EW_ped_button, NS_ped_button <- NS_ped_button
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 21 14:53:22 PST 2016 by Daniel
+\* Last modified Mon Nov 21 14:54:14 PST 2016 by Daniel
 \* Last modified Mon Nov 21 13:08:57 PST 2016 by abhi
 \* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi
