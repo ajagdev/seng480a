@@ -18,7 +18,7 @@ loop: while (TRUE) {
        
        if ( timer > 0) {
         timer := timer - 1;
-        };
+        }; 
  
         if ( timer = 1) {
          
@@ -207,6 +207,7 @@ p2 == INSTANCE project2 WITH EW <- EW, NS <- NS, NS_ped <- NS_ped, EW_ped <- EW_
  EW_ped_button <- EW_ped_button, NS_ped_button <- NS_ped_button
 =============================================================================
 \* Modification History
+\* Last modified Mon Nov 21 15:04:41 PST 2016 by abhi
 \* Last modified Mon Nov 21 14:54:14 PST 2016 by Daniel
 \* Last modified Mon Nov 21 13:08:57 PST 2016 by abhi
 \* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
