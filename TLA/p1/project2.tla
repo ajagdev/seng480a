@@ -101,9 +101,11 @@ Cycle == /\ [][EW = "green" => EW' = "yellow"]_<<EW>>
          /\ [][NS = "green" => NS' = "yellow"]_<<NS>>
          /\ [][NS = "yellow" => NS' = "red"]_<<NS>>
          /\ [][NS = "red" => NS' = "green"]_<<NS>>
+         
+p1 == INSTANCE project1 WITH EW <- EW, NS <- NS
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 21 13:17:06 PST 2016 by Daniel
+\* Last modified Mon Nov 21 13:22:14 PST 2016 by Daniel
 \* Last modified Mon Nov 21 13:08:57 PST 2016 by abhi
 \* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi
