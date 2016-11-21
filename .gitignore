@@ -1,4 +1,4 @@
-*.DS_Store
-*.old
-*.tla.pmap
-*Model_1
+!.gitignore
+!project1.tla
+!project2.tla
+!project1.toolbox/project1__Model_1.launch
