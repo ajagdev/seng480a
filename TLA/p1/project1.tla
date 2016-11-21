@@ -92,8 +92,19 @@ Spec == /\ Init /\ [][Next]_vars
         /\ WF_vars(Next)
 
 \* END TRANSLATION
+NoCollisions == /\ []((EW = "green" \/ EW = "yellow") => NS = "red")
+                /\ []((NS = "green" \/ NS = "yellow") => EW = "red")
+
+Cycle == /\ [][EW = "green" => EW' = "yellow"]_<<EW>>
+         /\ [][EW = "yellow" => EW' = "red"]_<<EW>>
+         /\ [][EW = "red" => EW' = "green"]_<<EW>>
+         /\ [][NS = "green" => NS' = "yellow"]_<<NS>>
+         /\ [][NS = "yellow" => NS' = "red"]_<<NS>>
+         /\ [][NS = "red" => NS' = "green"]_<<NS>>
 =============================================================================
 \* Modification History
+\* Last modified Mon Nov 21 12:20:27 PST 2016 by Daniel
+\* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
 \* Last modified Tue Nov 01 16:28:48 PDT 2016 by abhi
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi
 \* Last modified Tue Nov 01 15:39:16 PDT 2016 by Daniel
