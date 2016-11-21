@@ -1,6 +1,5 @@
 *
 !.gitignore
-!*.tla
 
 !TLA/p1
 TLA/p1*
