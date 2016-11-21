@@ -18,12 +18,13 @@
 <stringAttribute key="modelBehaviorNext" value=""/>
 <stringAttribute key="modelBehaviorSpec" value="Spec"/>
 <intAttribute key="modelBehaviorSpecType" value="1"/>
-<stringAttribute key="modelBehaviorVars" value="EW_ped_button, NS_ped, pc, NS, EW_ped, EW, timer, NS_ped_button"/>
+<stringAttribute key="modelBehaviorVars" value="EW_ped_button, NS_ped, pc, EW_sensor, NS, EW_ped, NS_sensor, EW, timer, NS_ped_button"/>
 <stringAttribute key="modelComments" value=""/>
 <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
 <listAttribute key="modelCorrectnessInvariants"/>
 <listAttribute key="modelCorrectnessProperties">
 <listEntry value="1p2!Properties"/>
+<listEntry value="1Sensor"/>
 </listAttribute>
 <stringAttribute key="modelExpressionEval" value=""/>
 <stringAttribute key="modelParameterActionConstraint" value=""/>

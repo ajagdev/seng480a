@@ -3,20 +3,25 @@ EXTENDS Integers
 
 (*
 --fair algorithm tcs {
-  variables EW = "green", NS = "red", timer = 5,
-  EW_ped = "red", NS_ped = "red", EW_ped_button = FALSE, NS_ped_button = TRUE;
+  variables EW = "green", NS = "red", timer = -1,
+  EW_ped = "red", NS_ped = "red", EW_ped_button = FALSE, NS_ped_button = TRUE,
+  NS_sensor = FALSE, EW_sensor = FALSE;
   
   { 
 loop: while (TRUE) {
         
        either   EW_ped_button := TRUE;
        or       NS_ped_button := TRUE;
+       or       NS_sensor := TRUE;
+       or       EW_sensor := TRUE;
        or {
                 EW_ped_button := EW_ped_button;
                 NS_ped_button := NS_ped_button;
+                EW_sensor := EW_sensor;
+                NS_sensor := NS_sensor;
            };
        
-       if ( timer > 0) {
+       if ( timer >= 0) {
         timer := timer - 1;
         };
  
@@ -54,7 +59,8 @@ t0:      if ( timer = 0) {
 ped1:               EW_ped := "green";
                 };
                 
-ew_green:       EW := "green";
+ew_green:       EW_sensor := FALSE;
+                EW := "green";
             } else {                
                 EW := "red";
                 
@@ -63,10 +69,17 @@ ew_green:       EW := "green";
 ped2:                NS_ped := "green";
                 };
                 
-ns_green:       NS := "green";
+ns_green:   NS_sensor := FALSE;
+            NS := "green";
             };
-       
-timer_reset: timer := 5;
+            
+        };
+        
+sensor: if (timer = -1) {
+            if ((EW = "green" /\ NS_sensor = TRUE) \/ (NS = "green" /\ EW_sensor = TRUE)
+                     \/ NS_ped_button = TRUE \/ EW_ped_button = TRUE) {
+timer_reset:    timer := 5;
+            };
         };
         
     };
@@ -74,28 +87,38 @@ timer_reset: timer := 5;
 }
 *)
 \* BEGIN TRANSLATION
-VARIABLES EW, NS, timer, EW_ped, NS_ped, EW_ped_button, NS_ped_button, pc
+VARIABLES EW, NS, timer, EW_ped, NS_ped, EW_ped_button, NS_ped_button, 
+          NS_sensor, EW_sensor, pc
 
-vars == << EW, NS, timer, EW_ped, NS_ped, EW_ped_button, NS_ped_button, pc >>
+vars == << EW, NS, timer, EW_ped, NS_ped, EW_ped_button, NS_ped_button, 
+           NS_sensor, EW_sensor, pc >>
 
 Init == (* Global variables *)
         /\ EW = "green"
         /\ NS = "red"
-        /\ timer = 5
+        /\ timer = -1
         /\ EW_ped = "red"
         /\ NS_ped = "red"
         /\ EW_ped_button = FALSE
         /\ NS_ped_button = TRUE
+        /\ NS_sensor = FALSE
+        /\ EW_sensor = FALSE
         /\ pc = "loop"
 
 loop == /\ pc = "loop"
         /\ \/ /\ EW_ped_button' = TRUE
-              /\ UNCHANGED NS_ped_button
+              /\ UNCHANGED <<NS_ped_button, NS_sensor, EW_sensor>>
            \/ /\ NS_ped_button' = TRUE
-              /\ UNCHANGED EW_ped_button
+              /\ UNCHANGED <<EW_ped_button, NS_sensor, EW_sensor>>
+           \/ /\ NS_sensor' = TRUE
+              /\ UNCHANGED <<EW_ped_button, NS_ped_button, EW_sensor>>
+           \/ /\ EW_sensor' = TRUE
+              /\ UNCHANGED <<EW_ped_button, NS_ped_button, NS_sensor>>
            \/ /\ EW_ped_button' = EW_ped_button
               /\ NS_ped_button' = NS_ped_button
-        /\ IF timer > 0
+              /\ EW_sensor' = EW_sensor
+              /\ NS_sensor' = NS_sensor
+        /\ IF timer >= 0
               THEN /\ timer' = timer - 1
               ELSE /\ TRUE
                    /\ timer' = timer
@@ -131,38 +154,52 @@ t0 == /\ pc = "t0"
                                   ELSE /\ pc' = "ns_green"
                                        /\ UNCHANGED NS_ped_button
                             /\ UNCHANGED << NS, EW_ped_button >>
-            ELSE /\ pc' = "loop"
+            ELSE /\ pc' = "sensor"
                  /\ UNCHANGED << EW, NS, EW_ped, NS_ped, EW_ped_button, 
                                  NS_ped_button >>
-      /\ timer' = timer
+      /\ UNCHANGED << timer, NS_sensor, EW_sensor >>
+
+ew_green == /\ pc = "ew_green"
+            /\ EW_sensor' = FALSE
+            /\ EW' = "green"
+            /\ pc' = "sensor"
+            /\ UNCHANGED << NS, timer, EW_ped, NS_ped, EW_ped_button, 
+                            NS_ped_button, NS_sensor >>
+
+ns_green == /\ pc = "ns_green"
+            /\ NS_sensor' = FALSE
+            /\ NS' = "green"
+            /\ pc' = "sensor"
+            /\ UNCHANGED << EW, timer, EW_ped, NS_ped, EW_ped_button, 
+                            NS_ped_button, EW_sensor >>
+
+ped1 == /\ pc = "ped1"
+        /\ EW_ped' = "green"
+        /\ pc' = "ew_green"
+        /\ UNCHANGED << EW, NS, timer, NS_ped, EW_ped_button, NS_ped_button, 
+                        NS_sensor, EW_sensor >>
+
+ped2 == /\ pc = "ped2"
+        /\ NS_ped' = "green"
+        /\ pc' = "ns_green"
+        /\ UNCHANGED << EW, NS, timer, EW_ped, EW_ped_button, NS_ped_button, 
+                        NS_sensor, EW_sensor >>
+
+sensor == /\ pc = "sensor"
+          /\ IF timer = -1
+                THEN /\ IF (EW = "green" /\ NS_sensor = TRUE) \/ (NS = "green" /\ EW_sensor = TRUE)
+                                \/ NS_ped_button = TRUE \/ EW_ped_button = TRUE
+                           THEN /\ pc' = "timer_reset"
+                           ELSE /\ pc' = "loop"
+                ELSE /\ pc' = "loop"
+          /\ UNCHANGED << EW, NS, timer, EW_ped, NS_ped, EW_ped_button, 
+                          NS_ped_button, NS_sensor, EW_sensor >>
 
 timer_reset == /\ pc = "timer_reset"
                /\ timer' = 5
                /\ pc' = "loop"
                /\ UNCHANGED << EW, NS, EW_ped, NS_ped, EW_ped_button, 
-                               NS_ped_button >>
-
-ew_green == /\ pc = "ew_green"
-            /\ EW' = "green"
-            /\ pc' = "timer_reset"
-            /\ UNCHANGED << NS, timer, EW_ped, NS_ped, EW_ped_button, 
-                            NS_ped_button >>
-
-ns_green == /\ pc = "ns_green"
-            /\ NS' = "green"
-            /\ pc' = "timer_reset"
-            /\ UNCHANGED << EW, timer, EW_ped, NS_ped, EW_ped_button, 
-                            NS_ped_button >>
-
-ped1 == /\ pc = "ped1"
-        /\ EW_ped' = "green"
-        /\ pc' = "ew_green"
-        /\ UNCHANGED << EW, NS, timer, NS_ped, EW_ped_button, NS_ped_button >>
-
-ped2 == /\ pc = "ped2"
-        /\ NS_ped' = "green"
-        /\ pc' = "ns_green"
-        /\ UNCHANGED << EW, NS, timer, EW_ped, EW_ped_button, NS_ped_button >>
+                               NS_ped_button, NS_sensor, EW_sensor >>
 
 ped_yellow == /\ pc = "ped_yellow"
               /\ IF EW_ped = "green"
@@ -174,40 +211,24 @@ ped_yellow == /\ pc = "ped_yellow"
                     ELSE /\ TRUE
                          /\ UNCHANGED NS_ped
               /\ pc' = "t0"
-              /\ UNCHANGED << EW, NS, timer, EW_ped_button, NS_ped_button >>
+              /\ UNCHANGED << EW, NS, timer, EW_ped_button, NS_ped_button, 
+                              NS_sensor, EW_sensor >>
 
-Next == loop \/ t0 \/ timer_reset \/ ew_green \/ ns_green \/ ped1 \/ ped2
-           \/ ped_yellow
+Next == loop \/ t0 \/ ew_green \/ ns_green \/ ped1 \/ ped2 \/ sensor
+           \/ timer_reset \/ ped_yellow
 
 Spec == /\ Init /\ [][Next]_vars
         /\ WF_vars(Next)
 
 \* END TRANSLATION
-Press == /\(NS_ped_button = TRUE) ~> (NS_ped_button = FALSE /\ NS_ped = "green")
-         /\(EW_ped_button = TRUE) ~> (EW_ped_button = FALSE /\ EW_ped = "green")
-         
-LongerYellow == /\ [][(NS_ped = "green" /\ NS_ped = "yellow") => (NS = "green")]_<<NS_ped, NS>>
-                /\ [][(EW_ped = "green" /\ EW_ped = "yellow") => (EW = "green")]_<<EW_ped, EW>>
-
-NoPedCollisions == /\ []((EW = "green" \/ EW = "yellow") => (NS_ped = "red"))
-                   /\ []((NS = "green" \/ NS = "yellow") => (EW_ped = "red"))
-
-PedCycle == /\ [][EW_ped = "green" => EW_ped' = "yellow"]_<<EW_ped>>
-            /\ [][EW_ped = "yellow" => EW_ped' = "red"]_<<EW_ped>>
-            /\ [][EW_ped = "red" => EW_ped' = "green"]_<<EW_ped>>
-            /\ [][NS_ped = "green" => NS_ped' = "yellow"]_<<NS_ped>>
-            /\ [][NS_ped = "yellow" => NS_ped' = "red"]_<<NS_ped>>
-            /\ [][NS_ped = "red" => NS_ped' = "green"]_<<NS_ped>>
-            
-PedOnRed == /\([][(EW_ped = "red" /\ EW_ped' = "green") => (EW = "red" /\ NS = "red")]_<<EW_ped, EW, NS>>)
-            /\([][(NS_ped = "red" /\ NS_ped' = "green") => (EW = "red" /\ NS = "red")]_<<NS_ped, EW, NS>>)
-
+Sensor == /\(NS_sensor = TRUE) ~> ( NS = "green" )
+         /\(EW_sensor = TRUE) ~> ( EW = "green" )
          
 p2 == INSTANCE project2 WITH EW <- EW, NS <- NS, NS_ped <- NS_ped, EW_ped <- EW_ped,
  EW_ped_button <- EW_ped_button, NS_ped_button <- NS_ped_button
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 21 14:54:14 PST 2016 by Daniel
+\* Last modified Mon Nov 21 15:21:07 PST 2016 by Daniel
 \* Last modified Mon Nov 21 13:08:57 PST 2016 by abhi
 \* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi
