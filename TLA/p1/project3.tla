@@ -7,7 +7,7 @@ EXTENDS Integers
   EW_ped = "red", NS_ped = "red", EW_ped_button = FALSE, NS_ped_button = TRUE,
   NS_sensor = FALSE, EW_sensor = FALSE;
   
-  fair process (triggers = 0)
+  process (triggers = 0)
   {
 triggers: either   EW_ped_button := TRUE;
        or       NS_ped_button := TRUE;
@@ -84,7 +84,7 @@ timer_reset:    timer := 5;
 }
 *)
 \* BEGIN TRANSLATION
-\* Label triggers of process triggers at line 11 col 11 changed to triggers_
+\* Label triggers of process triggers at line 12 col 11 changed to triggers_
 VARIABLES EW, NS, timer, EW_ped, NS_ped, EW_ped_button, NS_ped_button, 
           NS_sensor, EW_sensor, pc
 
@@ -225,7 +225,6 @@ Next == triggers \/ lights
 
 Spec == /\ Init /\ [][Next]_vars
         /\ WF_vars(Next)
-        /\ WF_vars(triggers)
         /\ WF_vars(lights)
 
 \* END TRANSLATION
