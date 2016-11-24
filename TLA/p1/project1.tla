@@ -103,7 +103,7 @@ Cycle == /\ [][EW = "green" => EW' = "yellow"]_<<EW>>
          /\ [][NS = "red" => NS' = "green"]_<<NS>>
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 21 13:14:59 PST 2016 by Daniel
+\* Last modified Thu Nov 24 11:52:05 PST 2016 by Daniel
 \* Last modified Mon Nov 21 13:08:57 PST 2016 by abhi
 \* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi
