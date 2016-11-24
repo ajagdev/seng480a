@@ -1,0 +1,7 @@
+Work Log:
+
+Nov 1: Meeting to orgainze and set up git (both for 1 hour)
+
+Nov 21: Implement TLA (both for 6 hours)
+
+Nov 24: Implememted python and python visualization (both for 3.5 hours)

@@ -66,8 +66,8 @@ ew_green:       EW_sensor := FALSE;
 ped2:                NS_ped := "green";
                 };
                 
-ns_green:   NS_sensor := FALSE;
-            NS := "green";
+ns_green:       NS_sensor := FALSE;
+                NS := "green";
             };
             
         };
