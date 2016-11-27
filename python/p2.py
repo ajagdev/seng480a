@@ -3,18 +3,29 @@ import graphics
 from random import *
 from multiprocessing import *
 from graphics import *
+from visualization import TrafficVisualization
+import random
 
 def triggers(ew, ns):
 	global EW_ped_button
 	global NS_ped_button
+	
+	ew_ped_timer = random.expovariate(0.00005)	#Should give 1 instance every 20000 miliseconds
+	ns_ped_timer = random.expovariate(0.00005)
+	
 	while (True):
-		choice = randint(0, 20)
-		if (choice == 0):
+		if (ew_ped_timer <= 0):
 			ew.value = True
-		choice = randint(0, 20)
-		if (choice == 0):
+			ew_ped_timer = random.expovariate(0.00005)
+		
+		if (ns_ped_timer <= 0):
 			ns.value = True
-		time.sleep(1)
+			ns_ped_timer = random.expovariate(0.00005)
+		
+		sleep_time = min(ew_ped_timer,ns_ped_timer)
+		ew_ped_timer -= sleep_time
+		ns_ped_timer -= sleep_time
+		time.sleep(sleep_time/1000.0)
 
 		
 if __name__ == '__main__':
@@ -22,60 +33,11 @@ if __name__ == '__main__':
 	NS_ped_button = Value('b', False)
 
 	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button))
+	p.daemon = True
 	p.start()
+
+	vis = TrafficVisualization(True, False)
 	
-	win = GraphWin("Intersection", 900, 900)
-	win.setBackground("Dark Olive Green")
-
-	ewRoad = Rectangle(Point(0,300), Point(900,600))
-	nsRoad = Rectangle(Point(300,0), Point(600,900))
-	nsRoad.setOutline('Dim Gray')
-	nsRoad.setFill('Dim Gray')
-	ewRoad.setOutline('Dim Gray')
-	ewRoad.setFill('Dim Gray')
-
-	northLoc = Point(600, 650)
-	southLoc = Point(300, 250)
-	eastLoc = Point (250, 600)
-	westLoc = Point (650, 300)
-
-	northPedLoc = Point(630, 680)
-	southPedLoc = Point(270, 220)
-	eastPedLoc = Point (220, 630)
-	westPedLoc = Point (680, 270)
-
-	northLight = Circle(northLoc, 30)
-	southLight = Circle(southLoc, 30)
-	eastLight = Circle(eastLoc, 30)
-	westLight = Circle(westLoc, 30)
-
-	northPedLight = Circle(northPedLoc, 15)
-	southPedLight = Circle(southPedLoc, 15)
-	eastPedLight = Circle(eastPedLoc, 15)
-	westPedLight = Circle(westPedLoc, 15)
-
-	northLight.setFill('red')
-	southLight.setFill('red')
-	eastLight.setFill('red')
-	westLight.setFill('red')
-
-	northPedLight.setFill('red')
-	southPedLight.setFill('red')
-	eastPedLight.setFill('red')
-	westPedLight.setFill('red')
-
-	nsRoad.draw(win)
-	ewRoad.draw(win)
-
-	northLight.draw(win)
-	southLight.draw(win)
-	eastLight.draw(win)
-	westLight.draw(win)
-	northPedLight.draw(win)
-	southPedLight.draw(win)
-	eastPedLight.draw(win)
-	westPedLight.draw(win)
-
 	timer = 5
 	EW = 'green'
 	NS = 'red'
@@ -83,7 +45,7 @@ if __name__ == '__main__':
 	EW_ped = 'red'
 
 	
-	while True:
+	while not vis.checkQuit():
 		if (timer > 0):
 			timer = timer - 1
 			
@@ -121,15 +83,12 @@ if __name__ == '__main__':
 				
 			timer = 5
 			
-		northLight.setFill(NS)
-		southLight.setFill(NS)
-		eastLight.setFill(EW)
-		westLight.setFill(EW)
-		
-		northPedLight.setFill(NS_ped)
-		southPedLight.setFill(NS_ped)
-		eastPedLight.setFill(EW_ped)
-		westPedLight.setFill(EW_ped)
+		vis.setEWLights(EW)
+		vis.setNSLights(NS)
+		vis.setEWPedLights(EW_ped)
+		vis.setNSPedLights(NS_ped)
+		vis.setPedButtonVisible('EW', EW_ped_button.value)
+		vis.setPedButtonVisible('NS', NS_ped_button.value)
 		
 		time.sleep(1)
-	p.join()
+	vis.close()
