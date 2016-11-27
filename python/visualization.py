@@ -101,6 +101,8 @@ class TrafficVisualization:
 	]
 	EWSensorsDrawn = False
 	
+	#Creates a window and draws an intersection. The intersection optionally includes
+	#	vehichle sensors and pedestrian crossings.
 	def __init__(self, hasPedestrian=False, hasSensors=False):
 		self.win = GraphWin("Intersection2", 900, 900)	
 		self.win.setBackground("Dark Olive Green")
@@ -143,23 +145,28 @@ class TrafficVisualization:
 		for e in self.EWLights + self.NSLights:
 			e.setFill('Red')
 			e.draw(self.win)
-			
+		
+	#Sets the colour of the EW traffic lights (ie "Red", "Yellow", "Green" etc)
 	def setEWLights(self, newColour):
 		for e in self.EWLights:
 			e.setFill(newColour)
-		
+	
+	#Sets the colour of the NS traffic lights (ie "Red", "Yellow", "Green" etc)	
 	def setNSLights(self, newColour):
 		for e in self.NSLights:
 			e.setFill(newColour)
-		
+
+	#Sets the colour of the EW pedestrian lights (ie "Red", "Yellow", "Green" etc)	
 	def setEWPedLights(self, newColour):
 		for e in self.EWPedLights:
 			e.setFill(newColour)
-		
+	
+	#Sets the colour of the NS pedestrian lights (ie "Red", "Yellow", "Green" etc)	
 	def setNSPedLights(self, newColour):
 		for e in self.NSPedLights:
 			e.setFill(newColour)
-			
+	
+	#Shows an indication that a pedestrian button has been pressed (Direction is 'NS', or 'EW')
 	def setPedButtonVisible(self, direction, show):
 		if direction == 'EW':
 			set = self.EWPedButtons
@@ -188,7 +195,8 @@ class TrafficVisualization:
 				e.draw(self.win)
 			else:
 				e.undraw()
-				
+	
+	#Shows an indication that a vehicle sensor has been triggered (Direction is 'NS', or 'EW')
 	def setSensorVisible(self, direction, show):
 		if direction == 'EW':
 			set = self.EWSensors
@@ -218,6 +226,7 @@ class TrafficVisualization:
 			else:
 				e.undraw()
 				
+	#Checks if the exit button has been pressed
 	def checkQuit(self):
 		clickPoint = self.win.checkMouse()
 		if clickPoint is None:
