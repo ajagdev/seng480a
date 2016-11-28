@@ -6,6 +6,7 @@ from graphics import *
 from visualization import TrafficVisualization
 import random
 
+# Generates poison distribution for triggers with a mean time of 1 / 20 seconds for each trigger, not exceeding 30 seconds.
 def triggers(ew, ns):
 	global EW_ped_button
 	global NS_ped_button
@@ -16,11 +17,11 @@ def triggers(ew, ns):
 	while (True):
 		if (ew_ped_timer <= 0):
 			ew.value = True
-			ew_ped_timer = random.expovariate(0.00005)
+			ew_ped_timer = min(random.expovariate(0.00005), 30000)
 		
 		if (ns_ped_timer <= 0):
 			ns.value = True
-			ns_ped_timer = random.expovariate(0.00005)
+			ns_ped_timer = min(random.expovariate(0.00005), 30000)
 		
 		sleep_time = min(ew_ped_timer,ns_ped_timer)
 		ew_ped_timer -= sleep_time

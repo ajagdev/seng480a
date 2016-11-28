@@ -5,6 +5,8 @@ import random
 from multiprocessing import *
 from visualization import TrafficVisualization
 
+
+# Generates poison distribution for triggers with a mean time of 1 / 20 seconds for each trigger, not exceeding 30 seconds.
 def triggers(ew, ns, ew_sensor, ns_sensor):
 	global EW_ped_button
 	global NS_ped_button
@@ -17,19 +19,19 @@ def triggers(ew, ns, ew_sensor, ns_sensor):
 	while (True):
 		if (ew_ped_timer <= 0):
 			ew.value = True
-			ew_ped_timer = random.expovariate(0.00005)
+			ew_ped_timer = min(random.expovariate(0.00005), 30000)
 		
 		if (ns_ped_timer <= 0):
 			ns.value = True
-			ns_ped_timer = random.expovariate(0.00005)
+			ns_ped_timer = min(random.expovariate(0.00005), 30000)
 
 		if (ew_sensor_timer <= 0):
 			ew_sensor.value = True
-			ew_sensor_timer = random.expovariate(0.00005)
+			ew_sensor_timer = min(random.expovariate(0.00005), 30000)
 
 		if (ns_sensor_timer <= 0):
 			ns_sensor.value = True
-			ns_sensor_timer = random.expovariate(0.00005)
+			ns_sensor_timer = min(random.expovariate(0.00005), 30000)
 		
 		sleep_time = min(ew_ped_timer,ns_ped_timer,ew_sensor_timer,ns_sensor_timer)
 		ew_ped_timer -= sleep_time
