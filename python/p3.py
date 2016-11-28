@@ -66,7 +66,7 @@ def mainLoop(vis, singleStep=False):
 	global NS_sensor
 
 #loop:
-	while not singleStep and not vis.checkQuit():
+	while singleStep or not vis.checkQuit():
 		if (timer >= 0):
 			timer = timer - 1
 			
@@ -126,6 +126,8 @@ def mainLoop(vis, singleStep=False):
 			vis.setSensorVisible('EW', EW_sensor.value)
 			
 			time.sleep(1)
+		else:
+			break
 	
 #Triggers use a different proccess so we need to assert that only the parent process
 #	runs the main code	
