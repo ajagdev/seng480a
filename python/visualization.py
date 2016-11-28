@@ -36,7 +36,14 @@ class TrafficVisualization:
 	ewRoad = Rectangle(Point(0,300), Point(900,600))
 	nsRoad = Rectangle(Point(300,0), Point(600,900))
 	
-	CrosswalkElements = [
+	roadLineElements = [
+		Line(Point(450,0), Point(450,190)),
+		Line(Point(450,710), Point(450,900)),
+		Line(Point(0,450),Point(190,450)),
+		Line(Point(710,450), Point(900,450))
+	]
+	
+	crosswalkElements = [
 		Rectangle(Point(300, 290), Point(600,300)),
 		Rectangle(Point(300, 190), Point(600,200)),
 		Rectangle(Point(600, 300), Point(610,600)),
@@ -98,7 +105,7 @@ class TrafficVisualization:
 	
 	EWSensors = [
 		Rectangle(Point(100, 450), Point(180, 550)),
-		Rectangle(Point(720, 550), Point(800, 450))
+		Rectangle(Point(720, 350), Point(800, 450))
 	]
 	EWSensorsDrawn = False
 	
@@ -114,7 +121,12 @@ class TrafficVisualization:
 		self.ewRoad.setFill('Dim Gray')
 		
 		self.nsRoad.draw(self.win)
-		self.ewRoad.draw(self.win)	
+		self.ewRoad.draw(self.win)
+		
+		for e in self.roadLineElements:
+			e.setWidth(10)
+			e.setOutline('Yellow')
+			e.draw(self.win)
 		
 		quit1 = Line(self.quitLimit1, self.quitLimit2)
 		quit2 = Rectangle(self.quitLimit1, self.quitLimit2)
@@ -124,9 +136,15 @@ class TrafficVisualization:
 		quit2.setOutline('Red')
 		quit1.draw(self.win)
 		quit2.draw(self.win)
+		textX = (self.quitLimit1.x+self.quitLimit2.x)/2
+		textY = (self.quitLimit2.y) + 30
+		quitText = Text(Point(textX,textY), 'Quit')
+		quitText.setTextColor('Red')
+		quitText.setSize(18)
+		quitText.draw(self.win)
 		
 		if hasPedestrian:
-			for e in self.CrosswalkElements:
+			for e in self.crosswalkElements:
 				e.setOutline('White')
 				e.setFill('White')
 				e.draw(self.win)
