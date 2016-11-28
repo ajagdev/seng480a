@@ -7,9 +7,7 @@ from visualization import TrafficVisualization
 
 
 # Generates poison distribution for triggers with a mean time of 1 / 20 seconds for each trigger, not exceeding 30 seconds.
-def triggers(ew, ns, ew_sensor, ns_sensor):
-	global EW_ped_button
-	global NS_ped_button
+def triggers(ew, ns, ew_sensor, ns_sensor, nonDeterminism):
 	
 	ew_ped_timer = min(random.expovariate(0.00005), 30000)	#Should give 1 instance every 20000 miliseconds
 	ns_ped_timer = min(random.expovariate(0.00005), 30000)
@@ -18,28 +16,31 @@ def triggers(ew, ns, ew_sensor, ns_sensor):
 	
 #triggers:
 	while (True):
-		if (ew_ped_timer <= 0):
-			ew.value = True
-			ew_ped_timer = min(random.expovariate(0.00005), 30000)
-		
-		if (ns_ped_timer <= 0):
-			ns.value = True
-			ns_ped_timer = min(random.expovariate(0.00005), 30000)
+		if nonDeterminism.value:
+			if (ew_ped_timer <= 0):
+				ew.value = True
+				ew_ped_timer = min(random.expovariate(0.00005), 30000)
+			
+			if (ns_ped_timer <= 0):
+				ns.value = True
+				ns_ped_timer = min(random.expovariate(0.00005), 30000)
 
-		if (ew_sensor_timer <= 0):
-			ew_sensor.value = True
-			ew_sensor_timer = min(random.expovariate(0.00005), 30000)
+			if (ew_sensor_timer <= 0):
+				ew_sensor.value = True
+				ew_sensor_timer = min(random.expovariate(0.00005), 30000)
 
-		if (ns_sensor_timer <= 0):
-			ns_sensor.value = True
-			ns_sensor_timer = min(random.expovariate(0.00005), 30000)
-		
-		sleep_time = min(ew_ped_timer,ns_ped_timer,ew_sensor_timer,ns_sensor_timer)
-		ew_ped_timer -= sleep_time
-		ns_ped_timer -= sleep_time
-		ew_sensor_timer -= sleep_time
-		ns_sensor_timer -= sleep_time
-		time.sleep(sleep_time/1000.0)
+			if (ns_sensor_timer <= 0):
+				ns_sensor.value = True
+				ns_sensor_timer = min(random.expovariate(0.00005), 30000)
+			
+			sleep_time = min(ew_ped_timer,ns_ped_timer,ew_sensor_timer,ns_sensor_timer)
+			ew_ped_timer -= sleep_time
+			ns_ped_timer -= sleep_time
+			ew_sensor_timer -= sleep_time
+			ns_sensor_timer -= sleep_time
+			time.sleep(sleep_time/1000.0)
+		else:
+			time.sleep(0.1)
 
 
 timer = -1
@@ -51,6 +52,7 @@ EW_ped_button = Value('b', False)
 NS_ped_button = Value('b', False)
 EW_sensor = Value('b', False)
 NS_sensor = Value('b', False)	
+nonDeterminism = Value('b', False)
 
 def mainLoop(vis, singleStep=False):
 
@@ -64,9 +66,10 @@ def mainLoop(vis, singleStep=False):
 	global NS_ped_button
 	global EW_sensor
 	global NS_sensor
-
+	global nonDeterminism
+	
 #loop:
-	while singleStep or not vis.checkQuit():
+	while True:
 		if (timer >= 0):
 			timer = timer - 1
 			
@@ -125,6 +128,18 @@ def mainLoop(vis, singleStep=False):
 			vis.setSensorVisible('NS', NS_sensor.value)
 			vis.setSensorVisible('EW', EW_sensor.value)
 			
+			vis.readClick()
+			
+			if vis.checkQuit():
+				break
+			
+			if vis.checkToggle():
+				print('pressed')
+				nonDeterminism.value = not nonDeterminism.value
+				vis.setToggleMode(nonDeterminism.value)
+				
+			vis.clearClick();
+			
 			time.sleep(1)
 		else:
 			break
@@ -134,7 +149,7 @@ def mainLoop(vis, singleStep=False):
 if __name__ == '__main__':
 
 	#This process will trigger events based on a poison distribution
-	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button, EW_sensor, NS_sensor))
+	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button, EW_sensor, NS_sensor, nonDeterminism))
 	p.daemon = True
 	p.start()
 	

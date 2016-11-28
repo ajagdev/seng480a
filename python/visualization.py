@@ -54,8 +54,19 @@ class TrafficVisualization:
 		Rectangle(Point(190, 300), Point(200,600))
 	]
 	
+	userClick = None
+	
 	quitLimit1 = Point(800,0)
 	quitLimit2 = Point(900,100)
+	quitButton = None
+	
+	toggleLimit1 = Point(800,110)
+	toggleLimit2 = Point(900,210)
+	toggleButton = None
+	
+	
+	nonDeterminismToggle1 = Point(800, 150)
+	nonDeterminismToggle2 = Point(900, 250)
 		
 	EWPedLights = [
 		Polygon(Arrow.getArrow(Point(300,250), 'E', 1.3)),
@@ -109,6 +120,29 @@ class TrafficVisualization:
 	]
 	EWSensorsDrawn = False
 	
+	def createButton(self, p1, p2, text, colour):
+		button1 = Rectangle(p1, p2)
+		button1.setWidth(8)
+		button1.setOutline(colour)
+		button1.setFill(colour)
+		textX = (p1.x+p2.x)/2
+		textY = (p1.y+p2.y)/2
+		buttonText = Text(Point(textX,textY), text)
+		buttonText.setTextColor('Black')
+		buttonText.setSize(18)
+		return [button1, buttonText]
+		
+	def wasButtonClicked(self, button):
+		clickPoint = self.userClick
+		print(str(button))
+		print(str(clickPoint))
+		if clickPoint is None:
+			return False
+		if clickPoint.x > button[0].getP1().x and clickPoint.x < button[0].getP2().x and clickPoint.y > button[0].getP1().y and clickPoint.y < button[0].getP2().y:
+			return True
+		else:
+			return False
+	
 	#Creates a window and draws an intersection. The intersection optionally includes
 	#	vehichle sensors and pedestrian crossings.
 	def __init__(self, hasPedestrian=False, hasSensors=False):
@@ -123,25 +157,19 @@ class TrafficVisualization:
 		self.nsRoad.draw(self.win)
 		self.ewRoad.draw(self.win)
 		
+		self.quitButton = self.createButton(self.quitLimit1, self.quitLimit2, 'Quit', 'Red')
+		for e in self.quitButton:
+			e.draw(self.win)
+			
+		self.toggleButton = self.createButton(self.toggleLimit1, self.toggleLimit2, 'Auto', 'Dark Green')
+		for e in self.toggleButton:
+			e.draw(self.win)
+		
 		for e in self.roadLineElements:
 			e.setWidth(10)
 			e.setOutline('Yellow')
 			e.draw(self.win)
-		
-		quit1 = Line(self.quitLimit1, self.quitLimit2)
-		quit2 = Rectangle(self.quitLimit1, self.quitLimit2)
-		quit1.setWidth(8)
-		quit2.setWidth(8)
-		quit1.setOutline('Red')
-		quit2.setOutline('Red')
-		quit1.draw(self.win)
-		quit2.draw(self.win)
-		textX = (self.quitLimit1.x+self.quitLimit2.x)/2
-		textY = (self.quitLimit2.y) + 30
-		quitText = Text(Point(textX,textY), 'Quit')
-		quitText.setTextColor('Red')
-		quitText.setSize(18)
-		quitText.draw(self.win)
+	
 		
 		if hasPedestrian:
 			for e in self.crosswalkElements:
@@ -245,15 +273,26 @@ class TrafficVisualization:
 			else:
 				e.undraw()
 				
+	def readClick(self):
+		self.userClick = self.win.checkMouse()
+		
+	def clearClick(self):
+		self.userClick = None
+				
 	#Checks if the exit button has been pressed
 	def checkQuit(self):
-		clickPoint = self.win.checkMouse()
-		if clickPoint is None:
-			return False
-		if clickPoint.x > self.quitLimit1.x and clickPoint.x < self.quitLimit2.x and clickPoint.y > self.quitLimit1.y and clickPoint.y < self.quitLimit2.y:
-			return True
+		return self.wasButtonClicked(self.quitButton)
+		
+	def checkToggle(self):
+		print('check')
+		return self.wasButtonClicked(self.toggleButton)
+		
+	def setToggleMode(self, mode):
+		if mode:
+			self.toggleButton[0].setFill('Green')
 		else:
-			return False
+			self.toggleButton[0].setFill('Dark Green')
+			
 			
 	def close(self):
 		self.win.close()
