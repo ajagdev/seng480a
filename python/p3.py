@@ -46,7 +46,11 @@ timer = -1
 EW = 'green'
 NS = 'red'
 NS_ped = 'red'
-EW_ped = 'red'		
+EW_ped = 'red'	
+EW_ped_button = Value('b', False)
+NS_ped_button = Value('b', False)
+EW_sensor = Value('b', False)
+NS_sensor = Value('b', False)	
 
 def mainLoop(vis, singleStep=False):
 
@@ -126,10 +130,6 @@ def mainLoop(vis, singleStep=False):
 #Triggers use a different proccess so we need to assert that only the parent process
 #	runs the main code	
 if __name__ == '__main__':
-	EW_ped_button = Value('b', False)
-	NS_ped_button = Value('b', False)
-	EW_sensor = Value('b', False)
-	NS_sensor = Value('b', False)
 
 	#This process will trigger events based on a poison distribution
 	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button, EW_sensor, NS_sensor))
