@@ -18,6 +18,7 @@ class Arrow:
 		Point(10, 5),
 		Point(10,10)
 	]
+	@staticmethod
 	def getArrow(origin, direction, scale):
 		if direction == 'N':
 			return [(lambda x: Point(origin.x + x.x*scale, origin.y + x.y*scale))(x) for x in Arrow.structureNS]
