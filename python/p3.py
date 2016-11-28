@@ -49,11 +49,17 @@ NS_ped = 'red'
 EW_ped = 'red'		
 
 def mainLoop(vis, singleStep=False):
+
+	#Added for ease of unit testing
 	global timer
 	global EW
 	global NS
 	global NS_ped
 	global EW_ped
+	global EW_ped_button
+	global NS_ped_button
+	global EW_sensor
+	global NS_sensor
 
 #loop:
 	while not singleStep and not vis.checkQuit():
