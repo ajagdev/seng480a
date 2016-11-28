@@ -13,8 +13,9 @@ class TestClass(unittest.TestCase):
 		NS_ped_button = Value('b', False)
 		EW_sensor = Value('b', False)
 		NS_sensor = Value('b', False)
+		nonDeterminism = Value('b', True)
 
-		p = Process(target=p3.triggers, args=(EW_ped_button, NS_ped_button, EW_sensor, NS_sensor))
+		p = Process(target=p3.triggers, args=(EW_ped_button, NS_ped_button, EW_sensor, NS_sensor, nonDeterminism))
 		p.daemon = True
 		p.start()
 
