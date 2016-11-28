@@ -11,10 +11,11 @@ def triggers(ew, ns, ew_sensor, ns_sensor):
 	global EW_ped_button
 	global NS_ped_button
 	
-	ew_ped_timer = random.expovariate(0.00005)	#Should give 1 instance every 20000 miliseconds
-	ns_ped_timer = random.expovariate(0.00005)
-	ew_sensor_timer = random.expovariate(0.00005)
-	ns_sensor_timer = random.expovariate(0.00005)
+	ew_ped_timer = min(random.expovariate(0.00005), 30000)	#Should give 1 instance every 20000 miliseconds
+	ns_ped_timer = min(random.expovariate(0.00005), 30000)
+	ew_sensor_timer = min(random.expovariate(0.00005), 30000)
+	ns_sensor_timer = min(random.expovariate(0.00005), 30000)
+
 	
 	while (True):
 		if (ew_ped_timer <= 0):
