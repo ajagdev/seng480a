@@ -40,16 +40,23 @@ def triggers(ew, ns, ew_sensor, ns_sensor):
 		ew_sensor_timer -= sleep_time
 		ns_sensor_timer -= sleep_time
 		time.sleep(sleep_time/1000.0)
-		
-def mainLoop(vis):
-	timer = -1
-	EW = 'green'
-	NS = 'red'
-	NS_ped = 'red'
-	EW_ped = 'red'
+
+
+timer = -1
+EW = 'green'
+NS = 'red'
+NS_ped = 'red'
+EW_ped = 'red'		
+
+def mainLoop(vis, singleStep=False):
+	global timer
+	global EW
+	global NS
+	global NS_ped
+	global EW_ped
 
 #loop:
-	while not vis.checkQuit():
+	while not singleStep and not vis.checkQuit():
 		if (timer >= 0):
 			timer = timer - 1
 			
@@ -98,17 +105,17 @@ def mainLoop(vis):
 #timer_reset:
 				timer = 5
 			
-		
-		vis.setEWLights(EW)
-		vis.setNSLights(NS)
-		vis.setEWPedLights(EW_ped)
-		vis.setNSPedLights(NS_ped)
-		vis.setPedButtonVisible('EW', EW_ped_button.value)
-		vis.setPedButtonVisible('NS', NS_ped_button.value)
-		vis.setSensorVisible('NS', NS_sensor.value)
-		vis.setSensorVisible('EW', EW_sensor.value)
-		
-		time.sleep(1)
+		if not singleStep:
+			vis.setEWLights(EW)
+			vis.setNSLights(NS)
+			vis.setEWPedLights(EW_ped)
+			vis.setNSPedLights(NS_ped)
+			vis.setPedButtonVisible('EW', EW_ped_button.value)
+			vis.setPedButtonVisible('NS', NS_ped_button.value)
+			vis.setSensorVisible('NS', NS_sensor.value)
+			vis.setSensorVisible('EW', EW_sensor.value)
+			
+			time.sleep(1)
 	
 #Triggers use a different proccess so we need to assert that only the parent process
 #	runs the main code	
