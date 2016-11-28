@@ -7,8 +7,10 @@ EXTENDS Integers
   EW_ped = "red", NS_ped = "red", EW_ped_button = FALSE, NS_ped_button = FALSE;
   process (triggers = 0)
   {
-triggers: either   EW_ped_button := TRUE;
-       or       NS_ped_button := TRUE;
+triggers: while(TRUE) {
+        either   EW_ped_button := TRUE;
+           or       NS_ped_button := TRUE;
+       }
     }
   
   
@@ -73,6 +75,7 @@ timer_reset: timer := 5;
 }
 *)
 \* BEGIN TRANSLATION
+\* Label triggers of process triggers at line 10 col 11 changed to triggers_
 VARIABLES EW, NS, timer, EW_ped, NS_ped, EW_ped_button, NS_ped_button, pc
 
 vars == << EW, NS, timer, EW_ped, NS_ped, EW_ped_button, NS_ped_button, pc >>
@@ -87,18 +90,18 @@ Init == (* Global variables *)
         /\ NS_ped = "red"
         /\ EW_ped_button = FALSE
         /\ NS_ped_button = FALSE
-        /\ pc = [self \in ProcSet |-> CASE self = 0 -> "button"
+        /\ pc = [self \in ProcSet |-> CASE self = 0 -> "triggers_"
                                         [] self = 1 -> "loop"]
 
-button == /\ pc[0] = "button"
-          /\ \/ /\ EW_ped_button' = TRUE
-                /\ UNCHANGED NS_ped_button
-             \/ /\ NS_ped_button' = TRUE
-                /\ UNCHANGED EW_ped_button
-          /\ pc' = [pc EXCEPT ![0] = "Done"]
-          /\ UNCHANGED << EW, NS, timer, EW_ped, NS_ped >>
+triggers_ == /\ pc[0] = "triggers_"
+             /\ \/ /\ EW_ped_button' = TRUE
+                   /\ UNCHANGED NS_ped_button
+                \/ /\ NS_ped_button' = TRUE
+                   /\ UNCHANGED EW_ped_button
+             /\ pc' = [pc EXCEPT ![0] = "triggers_"]
+             /\ UNCHANGED << EW, NS, timer, EW_ped, NS_ped >>
 
-buttons == button
+triggers == triggers_
 
 loop == /\ pc[1] = "loop"
         /\ IF timer > 0
@@ -185,15 +188,15 @@ ped_yellow == /\ pc[1] = "ped_yellow"
 lights == loop \/ t0 \/ timer_reset \/ ew_green \/ ns_green \/ ped1 \/ ped2
              \/ ped_yellow
 
-Next == buttons \/ lights
+Next == triggers \/ lights
 
 Spec == /\ Init /\ [][Next]_vars
         /\ WF_vars(Next)
         /\ WF_vars(lights)
 
 \* END TRANSLATION
-Press == /\(NS_ped_button = TRUE) ~> (NS_ped_button = FALSE /\ NS_ped = "green")
-         /\(EW_ped_button = TRUE) ~> (EW_ped_button = FALSE /\ EW_ped = "green")
+Press == /\(NS_ped_button = TRUE) ~> ( NS_ped = "green")
+         /\(EW_ped_button = TRUE) ~> ( EW_ped = "green")
          
 LongerYellow == /\ [][(NS_ped = "green" /\ NS_ped' = "yellow") => (NS = "green")]_<<NS_ped, NS>>
                 /\ [][(EW_ped = "green" /\ EW_ped' = "yellow") => (EW = "green")]_<<EW_ped, EW>>
@@ -216,7 +219,7 @@ Properties == Press /\ LongerYellow /\ NoPedCollisions /\ PedCycle /\ PedOnRed
 p1 == INSTANCE project1 WITH EW <- EW, NS <- NS
 =============================================================================
 \* Modification History
-\* Last modified Thu Nov 24 11:58:47 PST 2016 by Daniel
+\* Last modified Mon Nov 28 11:59:56 PST 2016 by Daniel
 \* Last modified Mon Nov 21 13:08:57 PST 2016 by abhi
 \* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi

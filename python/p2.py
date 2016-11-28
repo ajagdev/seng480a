@@ -11,9 +11,10 @@ def triggers(ew, ns):
 	global EW_ped_button
 	global NS_ped_button
 	
-	ew_ped_timer = random.expovariate(0.00005)	#Should give 1 instance every 20000 miliseconds
-	ns_ped_timer = random.expovariate(0.00005)
+	ew_ped_timer = min(random.expovariate(0.00005), 30000)	#Should give 1 instance every 20000 miliseconds
+	ns_ped_timer = min(random.expovariate(0.00005), 30000)
 	
+#triggers:
 	while (True):
 		if (ew_ped_timer <= 0):
 			ew.value = True
@@ -28,24 +29,14 @@ def triggers(ew, ns):
 		ns_ped_timer -= sleep_time
 		time.sleep(sleep_time/1000.0)
 
-		
-if __name__ == '__main__':
-	EW_ped_button = Value('b', False)
-	NS_ped_button = Value('b', False)
-
-	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button))
-	p.daemon = True
-	p.start()
-
-	vis = TrafficVisualization(True, False)
-	
+def mainLoop(vis):
 	timer = 5
 	EW = 'green'
 	NS = 'red'
 	NS_ped = 'red'
 	EW_ped = 'red'
 
-	
+#loop:
 	while not vis.checkQuit():
 		if (timer > 0):
 			timer = timer - 1
@@ -57,12 +48,14 @@ if __name__ == '__main__':
 				NS_ped = 'yellow'
 		
 		if (timer == 2):
+#ped_yellow
 			if (EW == 'red'):
 				NS = 'yellow'
 			else:
 				EW = 'yellow'
 		
 		if (timer == 0):
+#t0:
 			EW_ped = 'red'
 			NS_ped = 'red'
 		
@@ -71,19 +64,24 @@ if __name__ == '__main__':
 				
 				if (EW_ped_button.value == True):
 					EW_ped_button.value = False
+#ped1:
 					EW_ped = 'green'
-				
+#ew_green:				
 				EW = 'green'
 			else:
-				NS = 'green'
 				EW = 'red'
 				
 				if (NS_ped_button.value == True):
 					NS_ped_button.value = False
+#ped2
 					NS_ped = 'green'
-				
+#ns_green:
+				NS = 'green'
+#timer_reset:
 			timer = 5
 			
+			
+		#Visualization updates
 		vis.setEWLights(EW)
 		vis.setNSLights(NS)
 		vis.setEWPedLights(EW_ped)
@@ -92,4 +90,20 @@ if __name__ == '__main__':
 		vis.setPedButtonVisible('NS', NS_ped_button.value)
 		
 		time.sleep(1)
+
+#Triggers use a different proccess so we need to assert that only the parent process
+#	runs the main code.
+if __name__ == '__main__':
+	EW_ped_button = Value('b', False)
+	NS_ped_button = Value('b', False)
+
+	#This process will trigger events based on a poison distribution
+	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button))
+	p.daemon = True
+	p.start()
+
+	vis = TrafficVisualization(True, False)
+	
+	mainLoop(vis)
+	
 	vis.close()

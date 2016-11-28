@@ -10,6 +10,8 @@ NS = 'red'
 
 vis = TrafficVisualization(False, False)
 
+#Direct translation of project1.tla Pluscal algorithm.
+#	Will loop until the user clicks the quit button in the visualization.
 while not vis.checkQuit():
 	if (timer > 0):
 		timer = timer - 1
@@ -31,7 +33,8 @@ while not vis.checkQuit():
 		
 	vis.setEWLights(EW)
 	vis.setNSLights(NS)
-	
+
+	#The logical timer is arbitrarialy set to one second.
 	time.sleep(1)
 vis.close()
 			

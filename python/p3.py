@@ -11,11 +11,12 @@ def triggers(ew, ns, ew_sensor, ns_sensor):
 	global EW_ped_button
 	global NS_ped_button
 	
-	ew_ped_timer = random.expovariate(0.00005)	#Should give 1 instance every 20000 miliseconds
-	ns_ped_timer = random.expovariate(0.00005)
-	ew_sensor_timer = random.expovariate(0.00005)
-	ns_sensor_timer = random.expovariate(0.00005)
+	ew_ped_timer = min(random.expovariate(0.00005), 30000)	#Should give 1 instance every 20000 miliseconds
+	ns_ped_timer = min(random.expovariate(0.00005), 30000)
+	ew_sensor_timer = min(random.expovariate(0.00005), 30000)
+	ns_sensor_timer = min(random.expovariate(0.00005), 30000)
 	
+#triggers:
 	while (True):
 		if (ew_ped_timer <= 0):
 			ew.value = True
@@ -39,25 +40,15 @@ def triggers(ew, ns, ew_sensor, ns_sensor):
 		ew_sensor_timer -= sleep_time
 		ns_sensor_timer -= sleep_time
 		time.sleep(sleep_time/1000.0)
-	
-def main():
-	EW_ped_button = Value('b', False)
-	NS_ped_button = Value('b', False)
-	EW_sensor = Value('b', False)
-	NS_sensor = Value('b', False)
-
-	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button, EW_sensor, NS_sensor))
-	p.daemon = True
-	p.start()
-
+		
+def mainLoop(vis):
 	timer = -1
 	EW = 'green'
 	NS = 'red'
 	NS_ped = 'red'
 	EW_ped = 'red'
-	
-	vis = TrafficVisualization(True, True)
-	
+
+#loop:
 	while not vis.checkQuit():
 		if (timer >= 0):
 			timer = timer - 1
@@ -67,13 +58,13 @@ def main():
 				EW_ped = 'yellow'            
 			if (NS_ped == 'green'):
 				NS_ped = 'yellow'
-		
+#ped_yellow:				
 		if (timer == 2):
 			if (EW == 'red'):
 				NS = 'yellow'
 			else:
 				EW = 'yellow'
-		
+#t0:				
 		if (timer == 0):
 			EW_ped = 'red'
 			NS_ped = 'red'
@@ -83,8 +74,9 @@ def main():
 				
 				if (EW_ped_button.value == True):
 					EW_ped_button.value = False
+#ped1:
 					EW_ped = 'green'
-				
+#ew_green:				
 				EW_sensor.value = False
 				EW = 'green'
 			else:
@@ -92,16 +84,18 @@ def main():
 				
 				if (NS_ped_button.value == True):
 					NS_ped_button.value = False
+#ped2:
 					NS_ped = 'green'
-					
+#ns_green:					
 				NS_sensor.value = False
 				NS = 'green'
-				
+#sensor:				
 		if (timer == -1):
 			if ((EW == 'green' and NS_sensor.value == True) or \
 				(NS == 'green' and EW_sensor.value == True) or \
 				NS_ped_button.value == True or \
 				EW_ped_button.value == True):
+#timer_reset:
 				timer = 5
 			
 		
@@ -115,8 +109,22 @@ def main():
 		vis.setSensorVisible('EW', EW_sensor.value)
 		
 		time.sleep(1)
-	vis.close()
-
 	
+#Triggers use a different proccess so we need to assert that only the parent process
+#	runs the main code	
 if __name__ == '__main__':
-	main()
+	EW_ped_button = Value('b', False)
+	NS_ped_button = Value('b', False)
+	EW_sensor = Value('b', False)
+	NS_sensor = Value('b', False)
+
+	#This process will trigger events based on a poison distribution
+	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button, EW_sensor, NS_sensor))
+	p.daemon = True
+	p.start()
+	
+	vis = TrafficVisualization(True, True)
+
+	mainLoop(vis)
+
+	vis.close()

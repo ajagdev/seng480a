@@ -9,10 +9,12 @@ EXTENDS Integers
   
   process (triggers = 0)
   {
-triggers: either   EW_ped_button := TRUE;
-       or       NS_ped_button := TRUE;
-       or       NS_sensor := TRUE;
-       or       EW_sensor := TRUE;
+triggers: while (TRUE) { 
+        either   EW_ped_button := TRUE;
+           or       NS_ped_button := TRUE;
+           or       NS_sensor := TRUE;
+           or       EW_sensor := TRUE;
+       }
    }
    
   fair process (lights = 1)
@@ -115,7 +117,7 @@ triggers_ == /\ pc[0] = "triggers_"
                    /\ UNCHANGED <<EW_ped_button, NS_ped_button, EW_sensor>>
                 \/ /\ EW_sensor' = TRUE
                    /\ UNCHANGED <<EW_ped_button, NS_ped_button, NS_sensor>>
-             /\ pc' = [pc EXCEPT ![0] = "Done"]
+             /\ pc' = [pc EXCEPT ![0] = "triggers_"]
              /\ UNCHANGED << EW, NS, timer, EW_ped, NS_ped >>
 
 triggers == triggers_

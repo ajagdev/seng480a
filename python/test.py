@@ -8,7 +8,7 @@ from p3 import triggers
 
 class TestClass(unittest.TestCase):
 
-    def test_triggers(self):
+	def test_triggers(self):
 
 		EW_ped_button = Value('b', False)
 		NS_ped_button = Value('b', False)
