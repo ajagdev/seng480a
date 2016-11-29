@@ -2,7 +2,7 @@
 EXTENDS Integers
 
 (*
---fair algorithm tcs {
+--algorithm tcs {
   variables EW = "green", NS = "red", timer = 5,
   EW_ped = "red", NS_ped = "red", EW_ped_button = FALSE, NS_ped_button = FALSE;
   process (triggers = 0)
@@ -191,7 +191,6 @@ lights == loop \/ t0 \/ timer_reset \/ ew_green \/ ns_green \/ ped1 \/ ped2
 Next == triggers \/ lights
 
 Spec == /\ Init /\ [][Next]_vars
-        /\ WF_vars(Next)
         /\ WF_vars(lights)
 
 \* END TRANSLATION
@@ -219,7 +218,7 @@ Properties == Press /\ LongerYellow /\ NoPedCollisions /\ PedCycle /\ PedOnRed
 p1 == INSTANCE project1 WITH EW <- EW, NS <- NS
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 28 11:59:56 PST 2016 by Daniel
+\* Last modified Mon Nov 28 16:12:32 PST 2016 by Daniel
 \* Last modified Mon Nov 21 13:08:57 PST 2016 by abhi
 \* Last modified Mon Nov 21 12:05:43 PST 2016 by Daniel
 \* Last modified Tue Nov 01 15:47:27 PDT 2016 by abhi

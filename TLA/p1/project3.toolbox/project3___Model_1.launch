@@ -6,7 +6,7 @@
 <intAttribute key="dfidDepth" value="100"/>
 <booleanAttribute key="dfidMode" value="false"/>
 <intAttribute key="distributedFPSetCount" value="0"/>
-<stringAttribute key="distributedNetworkInterface" value="134.87.187.125"/>
+<stringAttribute key="distributedNetworkInterface" value="134.87.189.91"/>
 <stringAttribute key="distributedTLC" value="off"/>
 <stringAttribute key="distributedTLCVMArgs" value=""/>
 <intAttribute key="fpBits" value="0"/>
@@ -25,6 +25,8 @@
 <listAttribute key="modelCorrectnessProperties">
 <listEntry value="1p2!Properties"/>
 <listEntry value="1Sensor"/>
+<listEntry value="1p2!p1!NoCollisions"/>
+<listEntry value="1p2!p1!Cycle"/>
 </listAttribute>
 <stringAttribute key="modelExpressionEval" value=""/>
 <stringAttribute key="modelParameterActionConstraint" value=""/>

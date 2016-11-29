@@ -8,4 +8,8 @@ Nov 24: Implemented python and python visualization (both for 3.5 hours)
 
 Nov 26,27: Improved visualization (Daniel for 4 hours)
 
-Nov 28: Implemented unit testing for the python program and Update the visualization to include manual and auto buttons to control the behaviour of the lights in p3 and finish the project (both for 4 hours)
+
+
+Nov 28: Implemented unit testing for the python program and Update the visualization 
+	to include manual and auto buttons to control the behaviour of the lights in
+	 p3 and finish the project (both for 5 hours)

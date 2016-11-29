@@ -31,6 +31,7 @@ class Arrow:
 
 class TrafficVisualization:
 	
+	#Visualization window
 	win = None
 
 	ewRoad = Rectangle(Point(0,300), Point(900,600))
@@ -54,20 +55,17 @@ class TrafficVisualization:
 		Rectangle(Point(190, 300), Point(200,600))
 	]
 	
+	#Possible UI buttons
 	userClick = None
-	
-	quitLimit1 = Point(800,0)
-	quitLimit2 = Point(900,100)
 	quitButton = None
-	
-	toggleLimit1 = Point(800,110)
-	toggleLimit2 = Point(900,210)
 	toggleButton = None
 	
-	
-	nonDeterminismToggle1 = Point(800, 150)
-	nonDeterminismToggle2 = Point(900, 250)
+	EWPedUserTriggerButton = None
+	NSPedUserTriggerButton = None
+	EWVehicleUserTriggerButton = None
+	NSVehicleUserTriggerButton = None
 		
+	#Pedestrian UI elements
 	EWPedLights = [
 		Polygon(Arrow.getArrow(Point(300,250), 'E', 1.3)),
 		Polygon(Arrow.getArrow(Point(600,250), 'W', 1.3)),
@@ -98,6 +96,7 @@ class TrafficVisualization:
 	]
 	NSPedButtonDrawn = False
 	
+	#Street light UI elements
 	NSLights = [
 		Polygon(Arrow.getArrow(Point(350,320), 'S', 3)),
 		Polygon(Arrow.getArrow(Point(550,580), 'N', 3))
@@ -120,6 +119,7 @@ class TrafficVisualization:
 	]
 	EWSensorsDrawn = False
 	
+	#Creates a new button UI element, p1 should be top left, p2 bottom right
 	def createButton(self, p1, p2, text, colour):
 		button1 = Rectangle(p1, p2)
 		button1.setWidth(8)
@@ -132,10 +132,9 @@ class TrafficVisualization:
 		buttonText.setSize(18)
 		return [button1, buttonText]
 		
+	#Determines if the user has clicked a button as of the last call to readClick()
 	def wasButtonClicked(self, button):
 		clickPoint = self.userClick
-		print(str(button))
-		print(str(clickPoint))
 		if clickPoint is None:
 			return False
 		if clickPoint.x > button[0].getP1().x and clickPoint.x < button[0].getP2().x and clickPoint.y > button[0].getP1().y and clickPoint.y < button[0].getP2().y:
@@ -157,14 +156,16 @@ class TrafficVisualization:
 		self.nsRoad.draw(self.win)
 		self.ewRoad.draw(self.win)
 		
-		self.quitButton = self.createButton(self.quitLimit1, self.quitLimit2, 'Quit', 'Red')
+		self.quitButton = self.createButton(Point(800,0), Point(900,100), 'Quit', 'Red')
 		for e in self.quitButton:
 			e.draw(self.win)
 			
-		self.toggleButton = self.createButton(self.toggleLimit1, self.toggleLimit2, 'Auto', 'Dark Green')
-		for e in self.toggleButton:
-			e.draw(self.win)
-		
+		#we only need automatic non-determanism if there are pedestrians or sensors
+		if hasPedestrian or hasSensors:
+			self.toggleButton = self.createButton(Point(800,110), Point(900,210), 'Auto', 'Dark Green')
+			for e in self.toggleButton:
+				e.draw(self.win)
+				
 		for e in self.roadLineElements:
 			e.setWidth(10)
 			e.setOutline('Yellow')
@@ -184,10 +185,20 @@ class TrafficVisualization:
 			for e in self.EWPedButtons + self.NSPedButtons:
 				e.setFill('Yellow')
 				
+			self.NSPedUserTriggerButton = self.createButton(Point(0,0), Point(100,100), 'Ped:\nNS', 'Light Blue')
+			self.EWPedUserTriggerButton = self.createButton(Point(130,0), Point(230,100), 'Ped:\nEW', 'Light Blue')
+			for e in self.NSPedUserTriggerButton + self.EWPedUserTriggerButton:
+				e.draw(self.win)	
+				
 		if hasSensors:
 			for e in self.NSSensors + self.EWSensors:
 				e.setWidth(5)
 				e.setOutline('Yellow')
+			
+			self.NSVehicleUserTriggerButton = self.createButton(Point(0,130), Point(100,230), 'Car:\nNS', 'Blue')
+			self.EWVehicleUserTriggerButton = self.createButton(Point(130,130), Point(230,230), 'Car:\nEW', 'Blue')
+			for e in self.EWVehicleUserTriggerButton + self.NSVehicleUserTriggerButton:
+				e.draw(self.win)	
 				
 		for e in self.EWLights + self.NSLights:
 			e.setFill('Red')
@@ -272,27 +283,38 @@ class TrafficVisualization:
 				e.draw(self.win)
 			else:
 				e.undraw()
-				
+			
+	#Reads any user input since the last call to readClick(), returns None if there was no input
 	def readClick(self):
 		self.userClick = self.win.checkMouse()
-		
-	def clearClick(self):
-		self.userClick = None
 				
 	#Checks if the exit button has been pressed
 	def checkQuit(self):
 		return self.wasButtonClicked(self.quitButton)
 		
+	#Checks if the auto toggle has been pressed
 	def checkToggle(self):
-		print('check')
-		return self.wasButtonClicked(self.toggleButton)
+		return self.toggleButton is not None and self.wasButtonClicked(self.toggleButton)
 		
+	#Checks if the EW/NS pedestrian buttons have been pressed
+	def checkEWPed(self):
+		return self.EWPedUserTriggerButton is not None and self.wasButtonClicked(self.EWPedUserTriggerButton)	
+	def checkNSPed(self):
+		return self.NSPedUserTriggerButton is not None and self.wasButtonClicked(self.NSPedUserTriggerButton)
+	
+	#Checks if the EW/NS vehicle buttons have been pressed
+	def checkEWCar(self):
+		return self.EWVehicleUserTriggerButton is not None and self.wasButtonClicked(self.EWVehicleUserTriggerButton)	
+	def checkNSCar(self):
+		return self.NSVehicleUserTriggerButton is not None and self.wasButtonClicked(self.NSVehicleUserTriggerButton)
+		
+	#Sets the display of the auto toggle
 	def setToggleMode(self, mode):
 		if mode:
 			self.toggleButton[0].setFill('Green')
 		else:
 			self.toggleButton[0].setFill('Dark Green')
 			
-			
+	#Closes the window
 	def close(self):
 		self.win.close()

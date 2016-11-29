@@ -6,7 +6,8 @@ from multiprocessing import *
 from visualization import TrafficVisualization
 
 
-# Generates poison distribution for triggers with a mean time of 1 / 20 seconds for each trigger, not exceeding 30 seconds.
+# Generates poison distribution for triggers with a mean time of 1 per 20 seconds for each trigger, not exceeding 30 seconds.
+# If nonDeterminism is false just sleeps
 def triggers(ew, ns, ew_sensor, ns_sensor, nonDeterminism):
 	
 	ew_ped_timer = min(random.expovariate(0.00005), 30000)	#Should give 1 instance every 20000 miliseconds
@@ -119,30 +120,37 @@ def mainLoop(vis, singleStep=False):
 				timer = 5
 			
 		if not singleStep:
-			vis.setEWLights(EW)
-			vis.setNSLights(NS)
-			vis.setEWPedLights(EW_ped)
-			vis.setNSPedLights(NS_ped)
-			vis.setPedButtonVisible('EW', EW_ped_button.value)
-			vis.setPedButtonVisible('NS', NS_ped_button.value)
-			vis.setSensorVisible('NS', NS_sensor.value)
-			vis.setSensorVisible('EW', EW_sensor.value)
-			
-			vis.readClick()
-			
-			if vis.checkQuit():
-				break
-			
-			if vis.checkToggle():
-				print('pressed')
-				nonDeterminism.value = not nonDeterminism.value
-				vis.setToggleMode(nonDeterminism.value)
+			for i in range(0,10):
+				vis.setEWLights(EW)
+				vis.setNSLights(NS)
+				vis.setEWPedLights(EW_ped)
+				vis.setNSPedLights(NS_ped)
+				vis.setPedButtonVisible('EW', EW_ped_button.value)
+				vis.setPedButtonVisible('NS', NS_ped_button.value)
+				vis.setSensorVisible('NS', NS_sensor.value)
+				vis.setSensorVisible('EW', EW_sensor.value)
 				
-			vis.clearClick();
-			
-			time.sleep(1)
+				vis.readClick()
+				
+				if vis.checkQuit():
+					return
+				
+				if vis.checkToggle():
+					nonDeterminism.value = not nonDeterminism.value
+					vis.setToggleMode(nonDeterminism.value)
+					
+				if vis.checkEWPed():
+					EW_ped_button.value = True	
+				if vis.checkNSPed():
+					NS_ped_button.value = True
+				if vis.checkEWCar():
+					EW_sensor.value = True
+				if vis.checkNSCar():
+					NS_sensor.value = True
+				
+				time.sleep(0.1)
 		else:
-			break
+			return
 	
 #Triggers use a different proccess so we need to assert that only the parent process
 #	runs the main code	

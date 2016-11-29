@@ -6,8 +6,9 @@ from graphics import *
 from visualization import TrafficVisualization
 import random
 
-# Generates poison distribution for triggers with a mean time of 1 / 20 seconds for each trigger, not exceeding 30 seconds.
-def triggers(ew, ns):
+# Generates poison distribution for triggers with a mean time of 1 per 20 seconds for each trigger, not exceeding 30 seconds.
+# If nonDeterminism is false just sleeps
+def triggers(ew, ns, nonDeterminism):
 	global EW_ped_button
 	global NS_ped_button
 	
@@ -16,18 +17,21 @@ def triggers(ew, ns):
 	
 #triggers:
 	while (True):
-		if (ew_ped_timer <= 0):
-			ew.value = True
-			ew_ped_timer = min(random.expovariate(0.00005), 30000)
-		
-		if (ns_ped_timer <= 0):
-			ns.value = True
-			ns_ped_timer = min(random.expovariate(0.00005), 30000)
-		
-		sleep_time = min(ew_ped_timer,ns_ped_timer)
-		ew_ped_timer -= sleep_time
-		ns_ped_timer -= sleep_time
-		time.sleep(sleep_time/1000.0)
+		if nonDeterminism.value:
+			if (ew_ped_timer <= 0):
+				ew.value = True
+				ew_ped_timer = min(random.expovariate(0.00005), 30000)
+			
+			if (ns_ped_timer <= 0):
+				ns.value = True
+				ns_ped_timer = min(random.expovariate(0.00005), 30000)
+			
+			sleep_time = min(ew_ped_timer,ns_ped_timer)
+			ew_ped_timer -= sleep_time
+			ns_ped_timer -= sleep_time
+			time.sleep(sleep_time/1000.0)
+		else:
+			time.sleep(0.1)
 
 def mainLoop(vis):
 	timer = 5
@@ -37,7 +41,7 @@ def mainLoop(vis):
 	EW_ped = 'red'
 
 #loop:
-	while not vis.checkQuit():
+	while True:
 		if (timer > 0):
 			timer = timer - 1
 			
@@ -80,25 +84,41 @@ def mainLoop(vis):
 #timer_reset:
 			timer = 5
 			
+		for i in range(0,10):
+			#Visualization updates
+			vis.setEWLights(EW)
+			vis.setNSLights(NS)
+			vis.setEWPedLights(EW_ped)
+			vis.setNSPedLights(NS_ped)
+			vis.setPedButtonVisible('EW', EW_ped_button.value)
+			vis.setPedButtonVisible('NS', NS_ped_button.value)
 			
-		#Visualization updates
-		vis.setEWLights(EW)
-		vis.setNSLights(NS)
-		vis.setEWPedLights(EW_ped)
-		vis.setNSPedLights(NS_ped)
-		vis.setPedButtonVisible('EW', EW_ped_button.value)
-		vis.setPedButtonVisible('NS', NS_ped_button.value)
-		
-		time.sleep(1)
+			vis.readClick()
+			
+			if vis.checkQuit():
+				return
+
+			if vis.checkToggle():
+				print('pressed')
+				nonDeterminism.value = not nonDeterminism.value
+				vis.setToggleMode(nonDeterminism.value)
+				
+			if vis.checkEWPed():
+				EW_ped_button.value = True	
+			if vis.checkNSPed():
+				NS_ped_button.value = True
+			
+			time.sleep(0.1)
 
 #Triggers use a different proccess so we need to assert that only the parent process
 #	runs the main code.
 if __name__ == '__main__':
 	EW_ped_button = Value('b', False)
 	NS_ped_button = Value('b', False)
+	nonDeterminism = Value('b', False)
 
 	#This process will trigger events based on a poison distribution
-	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button))
+	p = Process(target=triggers, args=(EW_ped_button, NS_ped_button, nonDeterminism))
 	p.daemon = True
 	p.start()
 
